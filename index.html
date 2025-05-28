@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Speaking Task</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
     body { font-family: sans-serif; padding: 20px; text-align: center; }
     #timer { font-size: 24px; margin: 20px; }
@@ -51,27 +52,27 @@
           if (e.data.size > 0) audioChunks.push(e.data);
         };
 
-        mediaRecorder.onstop = async () => {
-          const blob = new Blob(audioChunks, { type: 'audio/webm' });
-          const form = new FormData();
-          form.append('audio', blob, 'speech.webm');
+       mediaRecorder.onstop = async () => {
+  const blob = new Blob(audioChunks, { type: 'audio/webm' });
+  const form = new FormData();
+  form.append('audio', blob, 'speech.webm');
 
-          try {
-            console.log('post qilinmoqda')
-            const res = await fetch(API_URL, {
-              method: 'POST',
-              body: form
-            });
+  try {
+    console.log('📤 Post qilinmoqda (axios)');
+    const res = await axios.post(API_URL, form, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
 
-            if (!res.ok) throw new Error('Server error');
-
-            const data = await res.json();
-            document.getElementById('result').innerText = `📄 Transcript:\n${data.transcript}\n\n📝 Feedback:\n${data.feedback}`;
-          } catch (err) {
-            document.getElementById('result').innerText = '❌ Baholashda xatolik.';
-            console.error('❌ Fetch error:', err.message);
-          }
-        };
+    const data = res.data;
+    document.getElementById('result').innerText = 
+      `📄 Transcript:\n${data.transcript}\n\n📝 Feedback:\n${data.feedback}`;
+  } catch (err) {
+    document.getElementById('result').innerText = '❌ Baholashda xatolik.';
+    console.error('❌ Axios xatolik:', err.message);
+  }
+};
 
         mediaRecorder.start();
         await startTimer('Recording...', seconds);
