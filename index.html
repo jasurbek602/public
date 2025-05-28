@@ -57,6 +57,7 @@
           form.append('audio', blob, 'speech.webm');
 
           try {
+            console.log('post qilinmoqda')
             const res = await fetch(API_URL, {
               method: 'POST',
               body: form
