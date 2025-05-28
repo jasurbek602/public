@@ -52,7 +52,7 @@
         };
 
         mediaRecorder.onstop = async () => {
-          const blob = new Blob(audioChunks, { type: 'audio' });
+          const blob = new Blob(audioChunks, { type: 'audio/webm' });
           const form = new FormData();
           form.append('audio', blob, 'speech.webm');
 
