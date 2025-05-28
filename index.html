@@ -1,8 +1,46 @@
 <!DOCTYPE html>
 <html>
-<head><title>Speaking Tasks</title></head>
+<head>
+  <title>Speaking Task</title>
+</head>
 <body>
-  <h1>Speaking Tasks</h1>
-  <a href="task-1.html">Start Task 1</a>
+  <h1>Speaking Task 1</h1>
+  <button id="start">Start</button>
+  <button id="stop">Stop & Send</button>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    document.getElementById('start').onclick = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.start();
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => {
+        audioChunks.push(e.data);
+      };
+    };
+
+    document.getElementById('stop').onclick = async () => {
+      mediaRecorder.stop();
+
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', blob, 'audio.webm');
+        formData.append('task', 'task1');
+
+        const res = await fetch('https://tgbot-production-ca44.up.railway.app/api/audio/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        alert("Matn: " + data.transcription + "\n\nBaholash: " + data.evaluation);
+      };
+    };
+  </script>
 </body>
 </html>
