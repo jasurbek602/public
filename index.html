@@ -69,9 +69,12 @@
     document.getElementById('result').innerText = 
       `📄 Transcript:\n${data.transcript}\n\n📝 Feedback:\n${data.feedback}`;
   } catch (err) {
-    document.getElementById('result').innerText = '❌ Baholashda xatolik.';
-    console.error('❌ Axios xatolik:', err.message);
-  }
+  console.error('❌ Xatolik:', err.response?.data || err.message);
+  res.status(500).json({ 
+    error: 'Baholashda xatolik yuz berdi', 
+    detail: err.response?.data || err.message 
+  });
+}
 };
 
         mediaRecorder.start();
