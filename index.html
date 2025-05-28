@@ -57,24 +57,19 @@
   const form = new FormData();
   form.append('audio', blob, 'speech.webm');
 
-  try {
-    console.log('📤 Post qilinmoqda (axios)');
+ try {
     const res = await axios.post(API_URL, form, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: form.getHeaders()
     });
 
+    if (res.status !== 200) throw new Error('Server error');
+
     const data = res.data;
-    document.getElementById('result').innerText = 
-      `📄 Transcript:\n${data.transcript}\n\n📝 Feedback:\n${data.feedback}`;
+    document.getElementById('result').innerText = `📄 Transcript:\n${data.transcript}\n\n📝 Feedback:\n${data.feedback}`;
   } catch (err) {
-  console.error('❌ Xatolik:', err.response?.data || err.message);
-  res.status(500).json({ 
-    error: 'Baholashda xatolik yuz berdi', 
-    detail: err.response?.data || err.message 
-  });
-}
+    console.error('❌ Xatolik:', err.response?.data || err.message);
+    document.getElementById('result').innerText = '❌ Baholashda xatolik yuz berdi.';
+  }
 };
 
         mediaRecorder.start();
